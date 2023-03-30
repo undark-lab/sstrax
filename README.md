@@ -14,8 +14,6 @@
 ----
 ## Installing `sstrax`
 
-<img align="center" height="300" src="./images/sstrax_example.png">
-
 `sstrax` is designed to be installed as a standard python package, so can be obtained using the following process
 ```
 cd [path/to/directory]
@@ -31,8 +29,9 @@ pip install sstrax
 ----
 ## Running `sstrax`
 
-- Import the module with `import sstrax as st`
-- To simply generate a stream with the default parameters given in [`sstrax/constants.py`](./sstrax/constants.py), run,
+<img align="center" height="300" src="./images/sstrax_example.png">
+
+First, import the module with `import sstrax as st`, then to simply generate a stream with the default parameters given in [`sstrax/constants.py`](./sstrax/constants.py), run:
 ```
 import jax, time
 stream = sstrax.simulate_stream(key=jax.random.PRNGKey(time.time_ns()), 
@@ -46,7 +45,12 @@ stream = sstrax.simulate_stream(key=jax.random.PRNGKey(time.time_ns()),
 
 The code is currently structured into the following files:
 
-- [`background.py`](./sstrax/background.py)
+- [`backgrounds.py`](./sstrax/backgrounds.py) | Implementation of the relevant forces from the Milky Way disk, bulge, and NFW halo. Automic computation of the force derivative relevant to the tidal stripping formalism using `jax` autodifferentiation functionality.
+- [`constants.py`](./sstrax/constants.py) | Definition of various constants, unit conversions [N.B. Default units throughout the code are: Mass $\mathrm{[M}_\odot\mathrm{]}$, Length $\mathrm{[kpc]}$, and Time $\mathrm{[Myr]}$, and parameter data structures. These are implemented in the `chex` data class format and can be modified via e.g. `params = st.Parameters(xc=10.5, alpha=14.9)`. Also defines the parameters relevant to the Milky Way gravitational potential.
+- [`ode.py`](./sstrax/ode.py) | Implementation of the two differential equation solvers (one for the dynamics in the gravitational potential, and one for solving the mass loss equation). Implemented using the [`diffrax`](https://github.com/patrick-kidger/diffrax) module.
+- [`projection.py`](./sstrax/projection.py) | Definition of the various co-ordinate transformations from the simulation frame (a Cartesian system with origin at the galactic centre) to other frame such as galactic and equitorial angular co-ordinates, or the GD1-centric stream co-ordinates. Uses the `jax` autodifferentiation functionality to automatically compute the relevant jacobians for transforming velocities between frames.
+- [`stream.py`](./sstrax/stream.py) | Definition of the full stream simulation code that inherits functionality from other modules. Key function is `simulate_stream` which can be called as defined above.
+- [`tidal.py`](./sstrax/tidal.py) | Definition and implementation of the tidal stripping model including computations of the Lagrange radius, and a sampling class to generate radnom stripping times given a mass evolution history.
 
 ----
 ## Release Details
