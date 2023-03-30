@@ -25,6 +25,7 @@ pip install sstrax
 - This will install `sstrax` in the current python environment that is active on your system and will be available via `import sstrax`
 - This library requires `jax` and `jaxlib` which will be installed as default from the requirements if they are not already present in your python installation
 - *Note:* If you are interested in local development, it is probably advisable to run `pip install -e sstrax` instead which will then track the main directory rather than creating a copy
+- *Note (April 2023):* Hopefully this will soon be available as a PyPI package and then be possible to be installed directly via `pip install sstrax`
 
 ----
 ## Running `sstrax`
