@@ -32,7 +32,7 @@ pip install sstrax
 
 <img align="center" height="300" src="./images/sstrax_example.png">
 
-First, import the module with `import sstrax as st`, then to simply generate a stream with the default parameters given in [`sstrax/constants.py`](./sstrax/constants.py), run:
+First, import the module with `import sstrax`, then to simply generate a stream with the default parameters given in [`sstrax/constants.py`](./sstrax/constants.py), run:
 ```
 import jax, time
 stream = sstrax.simulate_stream(key=jax.random.PRNGKey(time.time_ns()), 
