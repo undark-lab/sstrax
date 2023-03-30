@@ -252,7 +252,7 @@ class StrippingSampler:
         >>> t_sample = jnp.linspace(0.0, params.age, 16**3)
         >>> mass_sample = mass_fun_vmap(t_sample)
         >>> strip_sampler = StrippingSampler.from_mass(t_sample, mass_sample)
-        >>> strip_sample.sample(jax.random.PRNGKey(0), shape=(6, 6))
+        >>> strip_sampler.sample(jax.random.PRNGKey(0), shape=(6, 6))
         """
         values = jax.random.uniform(key, shape)
         value_bins = jnp.searchsorted(self.cdf, values)

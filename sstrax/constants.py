@@ -124,7 +124,7 @@ class NFWParams:
       NFW parameters data class
     Examples
     --------
-    >>> NFWParams(rc=16.0, fNFW=0.35)
+    >>> NFWParams(rs=16.0, fNFW=0.35)
     """
 
     rs: float = 16.0
@@ -172,7 +172,7 @@ class Parameters:
       Stream parameters data class
     Examples
     --------
-    >>> Parameters(xc=12.4, yc=1.5,...)
+    >>> Parameters(xc=12.4, yc=1.5)
     """
 
     xc: float = 12.4

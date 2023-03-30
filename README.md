@@ -39,6 +39,7 @@ stream = sstrax.simulate_stream(key=jax.random.PRNGKey(time.time_ns()),
                                 params=st.Parameters())
 ```
 - This outputs a list of stars in a jax array of shape `(6, N_stars)` where `N_stars` is a dynamically computed quantity based on the mass loss, and the columns are the phase space co-ordinates $(x, y, z, v_x, v_y, v_z)$ defined in the [`sstrax/projection.py`](./sstrax/projection.py) module. Projections to other co-ordinate frames (including the velocity jacobain transformations) are available in the same module.
+- Details and examples for running each of the individual functions can be found in the relevant docstrings throughout the code.
 - **Important:** One of the distinct features of `jax` compared to e.g. `numpy` is that you must specify and handle your own random seed generation. Most of this management is done internally, but to run an individual simulation, you must specify and generate your own key. The above example shows one way to do this simply by using the `time.time_ns()` command as a random seed. For debugging purposes, however, it might actually be preferable to fix the value e.g. `key = jax.random.PRNGKey(0)` so that the same realisation is generated every time.
 
 ----
