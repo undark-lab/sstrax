@@ -129,5 +129,3 @@ dmypy.json
 .pyre/
 *.DS_Store
 */*.DS_Store
-build/*
-sstrax.egg_info
