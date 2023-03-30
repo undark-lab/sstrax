@@ -5,7 +5,17 @@ from .constants import DiskParams, MWParams, NFWParams, BulgeParams, gamma_low
 
 @jax.jit
 def force_mw(x):
-    # Tested 16/1
+    """
+    Computes the force at a position x (in the simulation frames).
+    Sums over the disk, bulge and NFW potential components.
+    Args:
+      x: 3d position (x, y, z) in [kpc]
+    Returns:
+      Force (per unit mass) in [kpc / Myr^2]
+    Examples
+    --------
+    >>> force_mw(x=jnp.array([8.0, 0.0, 0.0]))
+    """
     return force_disk(x) + force_bulge(x) + force_nfw(x)
 
 
