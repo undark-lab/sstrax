@@ -226,6 +226,3 @@ def halo_to_gd1_all(Xhalo: jnp.ndarray, Vhalo: jnp.ndarray) -> jnp.ndarray:
 gd1_projection_vmap = jax.jit(
     jax.vmap(halo_to_gd1_all, (0, 0))
 )  # Vectorised version of position and velocity co-ordinate transformation from simulation frame to angular GD1 co-ordinates
-
-if __name__ == "__main__":
-    pass

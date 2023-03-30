@@ -103,7 +103,3 @@ def force_nfw(x: jnp.ndarray, nfw=NFWParams(), mw=MWParams()) -> jnp.ndarray:
     )
     direction = (1 / rad) * x
     return -nfw.fNFW * mw.ftot * dimless_prefactor * direction
-
-
-if __name__ == "__main__":
-    pass

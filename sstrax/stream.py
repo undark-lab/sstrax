@@ -90,7 +90,3 @@ def simulate_stream(key, params: Parameters) -> jnp.ndarray:
         stars_Xf[i] = sample_trace(key, strip_sampler, clust_sol, mass_sol, params)
 
     return stars_Xf
-
-
-if __name__ == "__main__":
-    pass
