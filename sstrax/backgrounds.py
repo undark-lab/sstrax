@@ -1,10 +1,11 @@
 import jax
 import jax.numpy as jnp
+import chex
 from .constants import DiskParams, MWParams, NFWParams, BulgeParams, gamma_low
 
 
 @jax.jit
-def force_mw(x):
+def force_mw(x: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the force at a position x (in the simulation frames).
     Sums over the disk, bulge and NFW potential components.
@@ -23,8 +24,19 @@ jacobian_force_mw = jax.jit(jax.jacfwd(force_mw))
 
 
 @jax.jit
-def force_disk(x, disk=DiskParams(), mw=MWParams()):
-    # Tested 16/1
+def force_disk(x: jnp.ndarray, disk=DiskParams(), mw=MWParams()) -> jnp.ndarray:
+    """
+    Computes the force at a position x (in the simulation frames) due to the Milky Way disk.
+    Args:
+      x: 3d position (x, y, z) in [kpc]
+      disk: dataclass containing the disk parameters (see constants.py)
+      mw: dataclass containing the Milky Way parameters (see constants.py)
+    Returns:
+      Force (per unit mass) in [kpc / Myr^2]
+    Examples
+    --------
+    >>> force_disk(x=jnp.array([8.0, 0.0, 0.0]))
+    """
     R2 = x[0] ** 2 + x[1] ** 2
     dimless_prefactor = (
         (mw.R0kpc**2 + (disk.a + disk.b) ** 2)
@@ -43,8 +55,19 @@ def force_disk(x, disk=DiskParams(), mw=MWParams()):
 
 
 @jax.jit
-def force_bulge(x, bulge=BulgeParams(), mw=MWParams()):
-    # Tested 16/1
+def force_bulge(x: jnp.ndarray, bulge=BulgeParams(), mw=MWParams()) -> jnp.ndarray:
+    """
+    Computes the force at a position x (in the simulation frames) due to the Milky Way bulge.
+    Args:
+      x: 3d position (x, y, z) in [kpc]
+      bulge: dataclass containing the bulge parameters (see constants.py)
+      mw: dataclass containing the Milky Way parameters (see constants.py)
+    Returns:
+      Force (per unit mass) in [kpc / Myr^2]
+    Examples
+    --------
+    >>> force_bulge(x=jnp.array([8.0, 0.0, 0.0]))
+    """
     rad = (x[0] ** 2 + x[1] ** 2 + x[2] ** 2) ** (1 / 2)
     dimless_prefactor = (
         mw.R0kpc**2
@@ -58,8 +81,19 @@ def force_bulge(x, bulge=BulgeParams(), mw=MWParams()):
 
 
 @jax.jit
-def force_nfw(x, nfw=NFWParams(), mw=MWParams()):
-    # Tested 16/1
+def force_nfw(x: jnp.ndarray, nfw=NFWParams(), mw=MWParams()) -> jnp.ndarray:
+    """
+    Computes the force at a position x (in the simulation frames) due to the Milky Way bulge.
+    Args:
+      x: 3d position (x, y, z) in [kpc]
+      nfw: dataclass containing the NFW parameters (see constants.py)
+      mw: dataclass containing the Milky Way parameters (see constants.py)
+    Returns:
+      Force (per unit mass) in [kpc / Myr^2]
+    Examples
+    --------
+    >>> force_nfw(x=jnp.array([8.0, 0.0, 0.0]))
+    """
     rad = (x[0] ** 2 + x[1] ** 2 + x[2] ** 2) ** (1 / 2)
     dimless_prefactor = (
         mw.R0kpc**2 * (rad / (nfw.rs + rad) - jnp.log((nfw.rs + rad) / nfw.rs))

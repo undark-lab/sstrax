@@ -3,35 +3,87 @@ import jax.numpy as jnp
 from jax.scipy.special import gammaln, gammainc
 import chex
 
-G = 4.498502151469552e-12
+G = 4.498502151469552e-12  # in units of kpc^3 Myr^-2 Msol^-1
 
 
 @jax.jit
-def to_kpcMyr2(f, vc0kms, R0kpc):
-    # Tested 16/1
+def to_kpcMyr2(f: float, vc0kms: float, R0kpc: float) -> float:
+    """
+    Rescales a force (per unit mass) f by a factor vc0kms^2 / R0kpc in kpc^2 / Myr
+    Args:
+      f: force to be rescaled
+      vc0kms: circular velocity in [km/s]
+      R0kpc: radius in [kpc]
+    Returns:
+      Force (per unit mass) in [kpc / Myr^2]
+    Examples
+    --------
+    >>> to_kpcMyr2(1., 220., 8.)
+    """
     return (0.000001045940172532453 * vc0kms**2 / R0kpc) * f
 
 
 @jax.jit
-def kms_to_kpcMyr(v_kms):
-    # Tested 18/1
+def kms_to_kpcMyr(v_kms: float) -> float:
+    """
+    Converts velocity from km/s to kpc/Myr
+    Args:
+      v_kms: velocity in [km/s]
+    Returns:
+      Force (per unit mass) in [kpc / Myr^2]
+    Examples
+    --------
+    >>> kms_to_kpcMyr(220.)
+    """
     return 0.001022712165045695 * v_kms
 
 
 @jax.jit
-def gamma(x):
-    # Tested 16/1
+def gamma(x: float) -> float:
+    """
+    Compiled version of the standard Gamma function
+    Args:
+      x: input value
+    Returns:
+      Gamma function evaludated at x
+    Examples
+    --------
+    >>> gamma(2.)
+    """
     return jnp.exp(gammaln(x))
 
 
 @jax.jit
-def gamma_low(x, y):
-    # Tested 16/1
+def gamma_low(x: float, y: float) -> float:
+    """
+    Compiled version of the incomplete gamma function from below (integral from 0 to y)
+    Args:
+      x: input value
+      y: upper integration limit
+    Returns:
+      Incomplete gamma function from below evaludated at x
+    Examples
+    --------
+    >>> gamma_low(2., 10.)
+    """
     return jnp.exp(gammaln(x)) * (1.0 - gammainc(x, y))
 
 
 @chex.dataclass
 class DiskParams:
+    """
+    Dataclass for the parameters defining the Milky Way disk
+    Args:
+      a: Disk major axis in [kpc]
+      b: Disk minor axis in [kpc]
+      fD: relative contribution of disk to force
+    Returns:
+      Disk parameters data class
+    Examples
+    --------
+    >>> DiskParams(a=3.0, b=0.28, fD=0.6)
+    """
+
     a: float = 3.0
     b: float = 0.28
     fD: float = 0.6
@@ -39,27 +91,90 @@ class DiskParams:
 
 @chex.dataclass
 class BulgeParams:
+    """
+    Dataclass for the parameters defining the Milky Way disk
+    Args:
+      alpha: power law exponent
+      rc: cut-off radius of bulge in [kpc]
+      fB: relative contribution of bulge to force
+    Returns:
+      Bulge parameters data class
+    Examples
+    --------
+    >>> BulgeParams(alpha=1.8, rc=1.9, fB=0.05)
+    """
+
     alpha: float = 1.8
     rc: float = 1.9
     fB: float = 0.05
-    g: float = gamma(1.5 - (1.8 / 2))
+
+    @property
+    def g(self):
+        return gamma(1.5 - (self.alpha / 2))
 
 
 @chex.dataclass
 class NFWParams:
+    """
+    Dataclass for the parameters defining the Milky Way NFW halo
+    Args:
+      rs: scale radius of NFW halo
+      fNFW: relative contribution of NFW halo
+    Returns:
+      NFW parameters data class
+    Examples
+    --------
+    >>> NFWParams(rc=16.0, fNFW=0.35)
+    """
+
     rs: float = 16.0
     fNFW: float = 0.35
 
 
 @chex.dataclass
 class MWParams:
+    """
+    Dataclass for the parameters defining the Milky Way force
+    Args:
+      vc0kms: measured circular velocity at a distance R0kpc from galactic centre in [km/s]
+      R0kpc: calibration distance in [kpc]
+    Returns:
+      MW parameters data class
+    Examples
+    --------
+    >>> MWParams(vc0kms=220.0, R0kpc=8.0)
+    """
+
     vc0kms: float = 220.0
     R0kpc: float = 8.0
-    ftot: float = to_kpcMyr2(1.0, 220.0, 8.0)
+
+    @property
+    def ftot(self):
+        return to_kpcMyr2(1.0, self.vc0kms, self.R0kpc)
 
 
 @chex.dataclass
 class Parameters:
+    """
+    Dataclass for the full set of parameters defining the stream simulation model
+    Args:
+      xc, yc, zc: current cluster location in [kpc]
+      vxc, vyc, vzc: current cluster velocity in [km/s]
+      age: (disruption) age of the stream in [Myr]
+      msat: initial mass of the cluster in [Msol]
+      xi0: dimensionless mass loss prefactor
+      alpha: tidal strippping mass loss power law
+      mbar: average stellar mass in [Msol]
+      sigv: internal velocity dispersion of cluster in [km/s]
+      lrelease, lmatch: dimensionless tidal position and velocity matching
+      stripnear: probability of stripping from the innermost Lagrange point
+    Returns:
+      Stream parameters data class
+    Examples
+    --------
+    >>> Parameters(xc=12.4, yc=1.5,...)
+    """
+
     xc: float = 12.4
     yc: float = 1.5
     zc: float = 7.1
@@ -105,5 +220,4 @@ class Parameters:
         return cls(**values)
 
 
-# Note: could also explicitly copy field names in to a list here.
 PRIOR_LIST = [field.name for field in Parameters.__dataclass_fields__.values()]

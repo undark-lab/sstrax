@@ -9,11 +9,11 @@ setup(
     author_email="j.b.g.alvey@uva.nl, m.gerdes@uva.nl",
     packages=["sstrax"],
     install_requires=[
-        "jax>=0.4.1",
-        "jaxlib>=0.4.1",
+        "jax==0.4.1",
+        "jaxlib==0.4.1",
         "jaxtyping>=0.2.11",
         "diffrax>=0.2.2",
-        "chex",
+        "chex==0.1.6",
         "numpy",
     ],
 )
