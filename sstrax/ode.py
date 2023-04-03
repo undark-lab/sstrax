@@ -13,6 +13,7 @@ from functools import partial
 from .backgrounds import force_mw
 from .tidal import tidalr_mw, trh
 from .constants import Parameters
+import warnings
 
 _dynamics_solver = Dopri5()
 _mass_solver = Dopri5()
@@ -120,29 +121,13 @@ def mass_termination_condition(state, **_):
 
 
 @partial(jax.jit, static_argnames=("max_steps",))
-def mass_solver(
+def _mass_solver_base(
     params: Parameters,
     cluster_solution,
     rtol: float = 1e-8,
     atol: float = 1e-8,
     max_steps: int = 16**3,
 ):
-    """
-    Differential equation solver for solving dynamics in Milky Way potential
-    Args:
-      params: Parameters class containing stream model parameters
-      cluster_solution: cluster evolution solution, output of dynamics_solver
-      rtol: relative tolerance
-      atol: absolute tolerance
-      max_steps: maximum number of solver steps (can raise ValueErorr if too small)
-    Returns:
-      Solution to the mass loss equation
-    Examples
-    --------
-    >>> params = Parameters()
-    >>> clust_sol = dynamics_solver(params.cluster_final, params.age, 0.0, dense=True)
-    >>> mass_sol = mass_solver(params, clust_sol)
-    """
     args = {"cluster_solution": cluster_solution, "mass_args": params.mass_args}
     term = ODETerm(mass_deriv)
     solver = _mass_solver
@@ -165,3 +150,40 @@ def mass_solver(
         discrete_terminating_event=discrete_terminating_event,
     )
     return solution
+
+
+def mass_solver(
+    params: Parameters,
+    cluster_solution,
+    rtol: float = 1e-8,
+    atol: float = 1e-8,
+    max_steps: int = 16**3,
+):
+    """
+        Differential equation solver for solving dynamics in Milky Way potential
+        Args:
+          params: Parameters class containing stream model parameters
+          cluster_solution: cluster evolution solution, output of dynamics_solver
+          rtol: relative tolerance
+          atol: absolute tolerance
+          max_steps: maximum number of solver steps. This is the baseline
+            and will be increased if the evaluation rquires more steps.
+        Returns:
+          Solution to the mass loss equation
+        Examples
+        --------
+        >>> params = Parameters()
+        >>> clust_sol = dynamics_solver(params.cluster_final, params.age, 0.0, dense=True)
+        >>> mass_sol = mass_solver(params, clust_sol)
+        """
+    try:
+        return _mass_solver_base(params, cluster_solution, rtol, atol, max_steps)
+    except RuntimeError as e:
+        if 'max_steps' in str(e):
+            max_steps = max_steps * 16
+            warnings.warn(
+                f'Mass integrator had to increase max_steps in the integration '
+                f'to {max_steps}. Consider using a larger value.')
+            return mass_solver(params, cluster_solution, rtol, atol, max_steps)
+        # reraise the exception if it is not due to max-steps being hit
+        raise e
