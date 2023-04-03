@@ -178,7 +178,7 @@ def mass_solver(
         """
     try:
         return _mass_solver_base(params, cluster_solution, rtol, atol, max_steps)
-    except RuntimeError as e:
+    except Exception as e:
         if 'max_steps' in str(e):
             max_steps = max_steps * 16
             warnings.warn(
