@@ -158,32 +158,36 @@ def mass_solver(
     rtol: float = 1e-8,
     atol: float = 1e-8,
     max_steps: int = 16**3,
+    maxstep_warnings: bool = False,
 ):
     """
-        Differential equation solver for solving dynamics in Milky Way potential
-        Args:
-          params: Parameters class containing stream model parameters
-          cluster_solution: cluster evolution solution, output of dynamics_solver
-          rtol: relative tolerance
-          atol: absolute tolerance
-          max_steps: maximum number of solver steps. This is the baseline
-            and will be increased if the evaluation rquires more steps.
-        Returns:
-          Solution to the mass loss equation
-        Examples
-        --------
-        >>> params = Parameters()
-        >>> clust_sol = dynamics_solver(params.cluster_final, params.age, 0.0, dense=True)
-        >>> mass_sol = mass_solver(params, clust_sol)
-        """
+    Differential equation solver for solving dynamics in Milky Way potential
+    For implementation, see _mass_solver_base.
+    Args:
+      params: Parameters class containing stream model parameters
+      cluster_solution: cluster evolution solution, output of dynamics_solver
+      rtol: relative tolerance
+      atol: absolute tolerance
+      max_steps: maximum number of solver steps. This is the baseline
+        and will be increased if the evaluation requires more steps.
+      maxstep_warnings: raise warnings about the number of steps used
+    Returns:
+      Solution to the mass loss equation
+    Examples
+    --------
+    >>> params = Parameters()
+    >>> clust_sol = dynamics_solver(params.cluster_final, params.age, 0.0, dense=True)
+    >>> mass_sol = mass_solver(params, clust_sol)
+    """
     try:
         return _mass_solver_base(params, cluster_solution, rtol, atol, max_steps)
     except Exception as e:
-        if 'max_steps' in str(e):
+        if "max_steps" in str(e):
             max_steps = max_steps * 16
-            warnings.warn(
-                f'Mass integrator had to increase max_steps in the integration '
-                f'to {max_steps}. Consider using a larger value.')
+            if maxstep_warnings:
+                warnings.warn(
+                    f"Mass integrator had to increase max_steps in the integration to {max_steps}. Consider using a larger value."
+                )
             return mass_solver(params, cluster_solution, rtol, atol, max_steps)
         # reraise the exception if it is not due to max-steps being hit
         raise e
