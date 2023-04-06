@@ -5,10 +5,18 @@
 
 - **sstrax** is a [jax](https://github.com/google/jax)-accelerated library designed to perform fast simulations of Milky Way stellar stream formation. It is desgined to be integrated with the [albatross](https://github.com/undark-lab/albatross) simulation-based inference code to perform complete parameter inference on stellar streams.
 - **Contacts:** For questions and comments on the code, please contact either [James Alvey](mailto:j.b.g.alvey@uva.nl) or [Mathis Gerdes](mailto:m.gerdes@uva.nl). Alternatively feel free to open an issue.
-- **Related paper:** The details regarding the implementation of `sstrax` and the physics modelling choices can be found in the companion paper.
+- **Related paper:** The details regarding the implementation of `sstrax` and the physics modelling choices can be found in the companion paper: [arxiv:2304.02032](https://arxiv.org/abs/2304.02032).
 - **Citation:** If you use **sstrax** in your analysis, or find it useful, we would ask that you please use the following citation.
 ```
-@article{...}
+@article{Alvey:2023pkx,
+    author = "Alvey, James and Gerdes, Mathis and Weniger, Christoph",
+    title = "{Albatross: A scalable simulation-based inference pipeline for analysing stellar streams in the Milky Way}",
+    eprint = "2304.02032",
+    archivePrefix = "arXiv",
+    primaryClass = "astro-ph.GA",
+    month = "4",
+    year = "2023"
+}
 ```
 
 ----
@@ -62,4 +70,4 @@ The code is currently structured into the following files:
 ----
 ## Release Details
 
-- **v0.0.1** | *April 2023* | Initial release based on [arXiv:2004.xxxx]()
+- **v0.0.1** | *April 2023* | Initial release based on [2304.02032](https://arxiv.org/abs/2304.02032)
