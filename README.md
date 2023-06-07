@@ -1,5 +1,7 @@
 <img align="center" height="150" src="./images/sstrax_logo.png">
 
+<a href="https://ascl.net/2306.008"><img src="https://img.shields.io/badge/ascl-2306.008-blue.svg?colorB=262255" alt="ascl:2306.008" /></a>
+
 ----
 ## Description
 
@@ -18,6 +20,7 @@
     year = "2023"
 }
 ```
+- **ASCL Code Record:** Please also see the dedicated ASCL code record: <a href="https://ascl.net/2306.008"><img src="https://img.shields.io/badge/ascl-2306.008-blue.svg?colorB=262255" alt="ascl:2306.008" /></a>
 
 ----
 ## Installing `sstrax`
