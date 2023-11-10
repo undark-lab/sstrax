@@ -51,7 +51,7 @@ First, import the module with `import sstrax`, then to simply generate a stream 
 ```
 import jax, time
 stream = sstrax.simulate_stream(key=jax.random.PRNGKey(time.time_ns()), 
-                                params=st.Parameters())
+                                params=sstrax.Parameters())
 ```
 - This outputs a list of stars in a jax array of shape `(6, N_stars)` where `N_stars` is a dynamically computed quantity based on the mass loss, and the columns are the phase space co-ordinates $(x, y, z, v_x, v_y, v_z)$ defined in the [`sstrax/projection.py`](./sstrax/projection.py) module. Projections to other co-ordinate frames (including the velocity jacobain transformations) are available in the same module.
 - Details and examples for running each of the individual functions can be found in the relevant docstrings throughout the code.
